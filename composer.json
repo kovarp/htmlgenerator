@@ -1,0 +1,19 @@
+{
+  "name": "kovarp/htmlgenerator",
+  "description": "Generator of the static HTML templates from Hellofront framework",
+  "homepage": "https://github.com/kovarp/htmlgenerator",
+  "license": ["MIT"],
+  "authors": [
+    {
+      "name": "Pavel Kovář",
+      "homepage": "https://www.pavelkovar.cz/"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0"
+  },
+  "autoload": {
+    "classmap": ["src/"]
+  },
+  "minimum-stability": "dev"
+}
