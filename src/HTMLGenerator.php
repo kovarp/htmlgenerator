@@ -92,10 +92,12 @@ class HTMLGenerator {
 			$content  = curl_exec( $ch );
 			$httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 
-			$dom = new DOMDocument;
-			$dom->loadHTML( $content );
 
 			if ( $httpcode == 301 ) {
+				$dom = new DOMDocument;
+				$dom->formatOutput = true;
+				$dom->loadHTML( $content );
+
 				foreach ( $dom->getElementsByTagName( 'a' ) as $node ) {
 					$url = $node->getAttribute( 'href' );
 				}
@@ -104,17 +106,7 @@ class HTMLGenerator {
 			curl_close( $ch );
 		} while ( $httpcode == 301 );
 
-		// Rewrite links to build
-		foreach ( $dom->getElementsByTagName( 'a' ) as $node ) {
-			$url = $node->getAttribute( 'href' );
-
-			if ( strpos( $url, $this->projectPath ) !== FALSE ) {
-				$node->setAttribute( 'href',
-					str_replace( $this->projectPath, $this->projectPath . $this->outputFolder . '/', $url ) );
-			}
-		}
-
-		return mb_convert_encoding( $dom->saveHTML(), 'UTF-8', 'HTML-ENTITIES' );
+		return str_replace('buildpathtorewrite', 'build', $content );
 	}
 
 	/**
