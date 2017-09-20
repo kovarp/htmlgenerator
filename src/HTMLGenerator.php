@@ -26,12 +26,13 @@ class HTMLGenerator {
 	/**
 	 * HTMLGenerator constructor.
 	 *
-	 * @param $projectPath
+	 * @param        $projectPath
+	 * @param string $pagesRootPath
 	 */
-	public function __construct( $projectPath ) {
+	public function __construct( $projectPath, $pagesRootPath = 'app/TemplateModule/templates/pages/' ) {
 		$this->projectPath   = $projectPath;
 		$this->outputFolder  = 'build';
-		$this->pagesRootPath = 'app/templates/pages/';
+		$this->pagesRootPath = $pagesRootPath;
 		$this->pages         = array();
 
 		$this->loadPagesToGenerate();
