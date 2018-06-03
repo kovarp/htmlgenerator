@@ -3,6 +3,7 @@
 namespace kovarp\Hellofront;
 
 use Nette\Utils\FileSystem;
+use Nette\Http\Url;
 use DOMDocument;
 
 /**
@@ -17,25 +18,18 @@ class HTMLGenerator {
 	/** @var string */
 	private $outputFolder;
 
-	/** @var string */
-	private $pagesRootPath;
-
 	/** @var array */
 	private $pages;
 
 	/**
 	 * HTMLGenerator constructor.
 	 *
-	 * @param        $projectPath
-	 * @param string $pagesRootPath
+	 * @param array  $pages
 	 */
-	public function __construct( $projectPath, $pagesRootPath = 'app/TemplateModule/templates/pages/' ) {
-		$this->projectPath   = $projectPath;
-		$this->outputFolder  = 'build';
-		$this->pagesRootPath = $pagesRootPath;
-		$this->pages         = array();
-
-		$this->loadPagesToGenerate();
+	public function __construct($pages, $projectPath) {
+		$this->outputFolder = 'build';
+		$this->pages = $pages;
+		$this->projectPath = $projectPath;
 	}
 
 	/**
@@ -52,31 +46,6 @@ class HTMLGenerator {
 	}
 
 	/**
-	 * Load pages from templates folder
-	 */
-	private function loadPagesToGenerate() {
-		$this->pages[] = '';
-
-		$dirs = scandir( $this->pagesRootPath );
-
-		foreach ( $dirs as $dir ) {
-			if ( $dir != '.' && $dir != '..' ) {
-				$dirPages = scandir( $this->pagesRootPath . $dir );
-				foreach ( $dirPages as $dirPage ) {
-					if ( $dirPage != '.' && $dirPage != '..' ) {
-						$this->pages[] = strtolower( $dir ) . '/' . str_replace( '.latte', '', $dirPage );
-					}
-				}
-			}
-		}
-
-		// Don't generate the main homepage twice
-		if ( ( $key = array_search( 'homepage/default', $this->pages ) ) !== FALSE ) {
-			unset( $this->pages[ $key ] );
-		}
-	}
-
-	/**
 	 * Return the HTML content of the page.
 	 *
 	 * @param $page
@@ -84,7 +53,7 @@ class HTMLGenerator {
 	 * @return string
 	 */
 	private function getPageContent( $page ) {
-		$url = 'http://localhost' . $this->projectPath . $page . '?staticGenerator';
+		$url = $page . '?staticGenerator';
 
 		do {
 			$ch = curl_init( $url );
@@ -117,6 +86,12 @@ class HTMLGenerator {
 	 * @param $content
 	 */
 	private function saveContentToFile( $page, $content ) {
+		$url = new Url($page);
+		$page = $url->path;
+		$page = substr($page, strlen($this->projectPath . '/') + 1);
+
+		var_dump($page);
+
 		if ( $page == '' ) {
 			$page = 'index';
 		}
